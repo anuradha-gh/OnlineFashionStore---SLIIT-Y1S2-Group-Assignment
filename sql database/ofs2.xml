@@ -1,0 +1,1277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- phpMyAdmin XML Dump
+- version 5.2.1
+- https://www.phpmyadmin.net
+-
+- Host: 127.0.0.1
+- Generation Time: Jun 12, 2023 at 03:26 AM
+- Server version: 10.4.28-MariaDB
+- PHP Version: 8.2.4
+-->
+
+<pma_xml_export version="1.0" xmlns:pma="https://www.phpmyadmin.net/some_doc_url/">
+    <!--
+    - Structure schemas
+    -->
+    <pma:structure_schemas>
+        <pma:database name="ofs2" collation="utf8mb4_general_ci" charset="utf8mb4">
+            <pma:table name="addtocart">
+                CREATE TABLE `addtocart` (
+                  `CartID` int(11) NOT NULL,
+                  `ProductID` int(11) NOT NULL,
+                  PRIMARY KEY (`CartID`,`ProductID`),
+                  KEY `AddToCart2_FK` (`ProductID`),
+                  CONSTRAINT `AddToCart1_FK` FOREIGN KEY (`CartID`) REFERENCES `cart` (`CartID`),
+                  CONSTRAINT `AddToCart2_FK` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="addtowishlist">
+                CREATE TABLE `addtowishlist` (
+                  `UserID` int(11) NOT NULL,
+                  `WishlistID` int(11) NOT NULL,
+                  `ProductID` int(11) NOT NULL,
+                  PRIMARY KEY (`UserID`,`WishlistID`,`ProductID`),
+                  KEY `WishlistProduct_FK` (`ProductID`),
+                  CONSTRAINT `WishlistProduct_FK` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`),
+                  CONSTRAINT `WishlistUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="admin">
+                CREATE TABLE `admin` (
+                  `AdminUN` varchar(50) NOT NULL,
+                  `Name` varchar(100) NOT NULL,
+                  `Password` varchar(255) NOT NULL,
+                  PRIMARY KEY (`AdminUN`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="cart">
+                CREATE TABLE `cart` (
+                  `CartID` int(11) NOT NULL AUTO_INCREMENT,
+                  `ProductName` varchar(255) DEFAULT NULL,
+                  `Image` varchar(255) DEFAULT NULL,
+                  `Size` varchar(5) DEFAULT NULL,
+                  `Price` int(11) DEFAULT NULL,
+                  `Quantity` int(11) DEFAULT NULL,
+                  `TotalAmount` int(11) DEFAULT NULL,
+                  `UserID` int(11) NOT NULL,
+                  PRIMARY KEY (`CartID`),
+                  KEY `CartUser_FK` (`UserID`),
+                  CONSTRAINT `CartUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE
+                ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="feedback">
+                CREATE TABLE `feedback` (
+                  `FID` int(11) NOT NULL AUTO_INCREMENT,
+                  `Comment` varchar(255) NOT NULL,
+                  `Date` datetime NOT NULL DEFAULT current_timestamp(),
+                  `slevel` int(11) DEFAULT NULL,
+                  `UserID` int(11) NOT NULL,
+                  `ProductID` int(11) NOT NULL,
+                  `AdminUN` varchar(50) NOT NULL,
+                  PRIMARY KEY (`FID`),
+                  KEY `FUser_FK` (`UserID`),
+                  KEY `FProductSize_FK` (`ProductID`),
+                  KEY `FAdmin_FK` (`AdminUN`),
+                  CONSTRAINT `FAdmin_FK` FOREIGN KEY (`AdminUN`) REFERENCES `admin` (`AdminUN`) ON DELETE CASCADE,
+                  CONSTRAINT `FProductSize_FK` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`) ON DELETE CASCADE,
+                  CONSTRAINT `FUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE
+                ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="orders">
+                CREATE TABLE `orders` (
+                  `OrderID` int(11) NOT NULL AUTO_INCREMENT,
+                  `Amount` int(11) NOT NULL,
+                  `BillingAddress` varchar(255) NOT NULL,
+                  `Quantity` int(11) DEFAULT 1,
+                  `PaymentMethod` varchar(30) NOT NULL,
+                  `OrderDate` datetime NOT NULL DEFAULT current_timestamp(),
+                  `OrderStatus` varchar(30) DEFAULT &#039;Pending&#039;,
+                  `UserID` int(11) NOT NULL,
+                  `AdminUN` varchar(50) NOT NULL,
+                  `ProductID` int(11) NOT NULL,
+                  PRIMARY KEY (`OrderID`),
+                  KEY `OrderUser_FK` (`UserID`),
+                  KEY `OrderAdmin_FK` (`AdminUN`),
+                  KEY `OrderProduct_FK` (`ProductID`),
+                  CONSTRAINT `OrderAdmin_FK` FOREIGN KEY (`AdminUN`) REFERENCES `admin` (`AdminUN`) ON DELETE CASCADE,
+                  CONSTRAINT `OrderProduct_FK` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`) ON DELETE CASCADE,
+                  CONSTRAINT `OrderUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE
+                ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="product">
+                CREATE TABLE `product` (
+                  `ProductID` int(11) NOT NULL AUTO_INCREMENT,
+                  `ProductName` varchar(255) NOT NULL,
+                  `ProductDesc` varchar(500) DEFAULT NULL,
+                  `filename` varchar(255) DEFAULT NULL,
+                  `filepath` varchar(255) DEFAULT NULL,
+                  `Price` int(11) NOT NULL,
+                  `Brand` varchar(30) DEFAULT NULL,
+                  `Size` varchar(5) NOT NULL,
+                  `Category` varchar(50) NOT NULL,
+                  `SubCategory` varchar(50) DEFAULT NULL,
+                  `Availability` varchar(30) DEFAULT &#039;InStock&#039;,
+                  `AdminUN` varchar(50) NOT NULL,
+                  PRIMARY KEY (`ProductID`),
+                  KEY `ProductAdmin_FK` (`AdminUN`),
+                  CONSTRAINT `ProductAdmin_FK` FOREIGN KEY (`AdminUN`) REFERENCES `admin` (`AdminUN`) ON DELETE CASCADE
+                ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="purchasedproducts">
+                CREATE TABLE `purchasedproducts` (
+                  `UserID` int(11) NOT NULL,
+                  `ProductID` int(11) NOT NULL,
+                  PRIMARY KEY (`UserID`,`ProductID`),
+                  KEY `PProduct_FK` (`ProductID`),
+                  CONSTRAINT `PProduct_FK` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`),
+                  CONSTRAINT `PUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="users">
+                CREATE TABLE `users` (
+                  `UserID` int(11) NOT NULL AUTO_INCREMENT,
+                  `FirstName` varchar(100) NOT NULL,
+                  `LastName` varchar(100) DEFAULT NULL,
+                  `DOB` date NOT NULL,
+                  `Gender` varchar(10) NOT NULL,
+                  `Email` varchar(100) NOT NULL,
+                  `Phone` int(11) DEFAULT NULL,
+                  `Password` varchar(255) NOT NULL,
+                  `Address` varchar(255) NOT NULL,
+                  `City` varchar(50) NOT NULL,
+                  `PostalCode` int(11) DEFAULT NULL,
+                  PRIMARY KEY (`UserID`)
+                ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+            <pma:table name="wishlist">
+                CREATE TABLE `wishlist` (
+                  `WishlistID` int(11) NOT NULL AUTO_INCREMENT,
+                  `UserID` int(11) NOT NULL,
+                  `ProductName` varchar(255) DEFAULT NULL,
+                  `Image` varchar(255) DEFAULT NULL,
+                  `Price` int(11) DEFAULT NULL,
+                  `Availability` varchar(30) DEFAULT NULL,
+                  PRIMARY KEY (`WishlistID`,`UserID`),
+                  KEY `WUser_FK` (`UserID`),
+                  CONSTRAINT `WUser_FK` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE
+                ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+            </pma:table>
+        </pma:database>
+    </pma:structure_schemas>
+
+    <!--
+    - Database: 'ofs2'
+    -->
+    <database name="ofs2">
+        <!-- Table addtocart -->
+        <!-- Table addtowishlist -->
+        <!-- Table admin -->
+        <table name="admin">
+            <column name="AdminUN">admin</column>
+            <column name="Name">Sasanka</column>
+            <column name="Password">$2a$04$GEfuKb4duNsHQgFkn41qieX95bVoUdbdxITK2A2hfhIOJ/emOXp9W</column>
+        </table>
+        <!-- Table cart -->
+        <table name="cart">
+            <column name="CartID">1</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">3000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">3000</column>
+            <column name="UserID">4</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">2</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="Image">uploads/Polocrewprint.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">1290</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">1290</column>
+            <column name="UserID">4</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">3</column>
+            <column name="ProductName">Mid Waist Blue Jean</column>
+            <column name="Image">uploads/bluejean.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">6990</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">6990</column>
+            <column name="UserID">3</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">4</column>
+            <column name="ProductName">Junior George’s casual shirt</column>
+            <column name="Image">uploads/casualShirt.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">1500</column>
+            <column name="Quantity">2</column>
+            <column name="TotalAmount">3000</column>
+            <column name="UserID">1</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">5</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">3000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">3000</column>
+            <column name="UserID">5</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">23</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">3000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">3000</column>
+            <column name="UserID">4</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">24</column>
+            <column name="ProductName">Women’s Chino Short Camel</column>
+            <column name="Image">uploads/ChinoShortCamel.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">1890</column>
+            <column name="Quantity">4</column>
+            <column name="TotalAmount">7560</column>
+            <column name="UserID">4</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">25</column>
+            <column name="ProductName">Poster Logo Cap</column>
+            <column name="Image">uploads/Levicap.jpg</column>
+            <column name="Size">S</column>
+            <column name="Price">690</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">690</column>
+            <column name="UserID">2</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">26</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">3000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">3000</column>
+            <column name="UserID">6</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">28</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">3000</column>
+            <column name="Quantity">5</column>
+            <column name="TotalAmount">15000</column>
+            <column name="UserID">4</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">29</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="Image">uploads/Polocrewprint.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">1290</column>
+            <column name="Quantity">2</column>
+            <column name="TotalAmount">2580</column>
+            <column name="UserID">3</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">30</column>
+            <column name="ProductName">Mid Waist Blue Jean</column>
+            <column name="Image">uploads/bluejean.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">6990</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">6990</column>
+            <column name="UserID">3</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">31</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="Image">uploads/Polocrewprint.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">1290</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">1290</column>
+            <column name="UserID">1</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">32</column>
+            <column name="ProductName">akila</column>
+            <column name="Image">uploads/11111111.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">20000</column>
+            <column name="Quantity">5</column>
+            <column name="TotalAmount">100000</column>
+            <column name="UserID">1</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">33</column>
+            <column name="ProductName">akila</column>
+            <column name="Image">uploads/11111111.jpg</column>
+            <column name="Size">L</column>
+            <column name="Price">20000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">20000</column>
+            <column name="UserID">1</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">34</column>
+            <column name="ProductName">Adidas X_PLR</column>
+            <column name="Image">uploads/adidassport.jpg</column>
+            <column name="Size">NA</column>
+            <column name="Price">19000</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">19000</column>
+            <column name="UserID">7</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">35</column>
+            <column name="ProductName">Men’s Sports Watch</column>
+            <column name="Image">uploads/Gshock.jpg</column>
+            <column name="Size">NA</column>
+            <column name="Price">2490</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">2490</column>
+            <column name="UserID">7</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">36</column>
+            <column name="ProductName">Poster Logo Cap</column>
+            <column name="Image">uploads/Levicap.jpg</column>
+            <column name="Size">S</column>
+            <column name="Price">690</column>
+            <column name="Quantity">5</column>
+            <column name="TotalAmount">3450</column>
+            <column name="UserID">7</column>
+        </table>
+        <table name="cart">
+            <column name="CartID">37</column>
+            <column name="ProductName">Women’s Chino Short Camel</column>
+            <column name="Image">uploads/ChinoShortCamel.jpg</column>
+            <column name="Size">M</column>
+            <column name="Price">1890</column>
+            <column name="Quantity">1</column>
+            <column name="TotalAmount">1890</column>
+            <column name="UserID">7</column>
+        </table>
+        <!-- Table feedback -->
+        <table name="feedback">
+            <column name="FID">1</column>
+            <column name="Comment">aaaaa</column>
+            <column name="Date">2023-06-07 09:28:21</column>
+            <column name="slevel">4</column>
+            <column name="UserID">2</column>
+            <column name="ProductID">1</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">2</column>
+            <column name="Comment">very good</column>
+            <column name="Date">2023-06-07 09:31:06</column>
+            <column name="slevel">5</column>
+            <column name="UserID">1</column>
+            <column name="ProductID">2</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">3</column>
+            <column name="Comment">good</column>
+            <column name="Date">2023-06-07 11:41:58</column>
+            <column name="slevel">4</column>
+            <column name="UserID">1</column>
+            <column name="ProductID">2</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">4</column>
+            <column name="Comment">d</column>
+            <column name="Date">2023-06-07 11:43:24</column>
+            <column name="slevel">4</column>
+            <column name="UserID">1</column>
+            <column name="ProductID">2</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">5</column>
+            <column name="Comment">Good Item</column>
+            <column name="Date">2023-06-07 16:20:10</column>
+            <column name="slevel">4</column>
+            <column name="UserID">4</column>
+            <column name="ProductID">4</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">6</column>
+            <column name="Comment">This product exceeded my expectations. The quality is great, and it fits perfectly.</column>
+            <column name="Date">2023-06-08 21:14:13</column>
+            <column name="slevel">4</column>
+            <column name="UserID">4</column>
+            <column name="ProductID">5</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">7</column>
+            <column name="Comment">bad product not satisfied</column>
+            <column name="Date">2023-06-08 21:24:49</column>
+            <column name="slevel">1</column>
+            <column name="UserID">4</column>
+            <column name="ProductID">4</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">8</column>
+            <column name="Comment">12/12, mildstone, Hawaii</column>
+            <column name="Date">2023-06-09 16:28:22</column>
+            <column name="slevel">5</column>
+            <column name="UserID">4</column>
+            <column name="ProductID">5</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="feedback">
+            <column name="FID">10</column>
+            <column name="Comment">good item ,satisfied</column>
+            <column name="Date">2023-06-12 05:55:41</column>
+            <column name="slevel">3</column>
+            <column name="UserID">7</column>
+            <column name="ProductID">25</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <!-- Table orders -->
+        <table name="orders">
+            <column name="OrderID">1</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">21/56, valinton, New Zealand</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Cancelled</column>
+            <column name="UserID">1</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">2</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">2</column>
+            <column name="Amount">2290</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">DebitCard</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">2</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">1</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">3</column>
+            <column name="Amount">6990</column>
+            <column name="BillingAddress">12/12, mildstone, HawaiiMildstone</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">DebitCard</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">3</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">4</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">7/90/B, hamiltonvaley, Germany</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Cancelled</column>
+            <column name="UserID">4</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">4</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">5</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">89A, george E. Silva RD, Colombo, Sri lanka</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">5</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">4</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">6</column>
+            <column name="Amount">1290</column>
+            <column name="BillingAddress">7/90/B, hamiltonvaley, Germany</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-06 19:18:58</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">4</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">13</column>
+            <column name="Amount">15000</column>
+            <column name="BillingAddress">12/12, mildstone, Hawaii</column>
+            <column name="Quantity">5</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-10 00:03:42</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">4</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">4</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">14</column>
+            <column name="Amount">2580</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-10 00:37:20</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">15</column>
+            <column name="Amount">2580</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-10 00:39:34</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">16</column>
+            <column name="Amount">2580</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-10 00:41:08</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">17</column>
+            <column name="Amount">2580</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-10 00:41:53</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">18</column>
+            <column name="Amount">2580</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-10 00:41:56</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">19</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">67j test riad test</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-10 00:46:56</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">6</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">4</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">20</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">67j test riad test</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-10 00:53:02</column>
+            <column name="OrderStatus">Confirmed</column>
+            <column name="UserID">6</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">4</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">21</column>
+            <column name="Amount">6990</column>
+            <column name="BillingAddress">67/453D, Youngland, Westly, U.S</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-10 01:00:05</column>
+            <column name="OrderStatus">Confirmed</column>
+            <column name="UserID">3</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">3</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">22</column>
+            <column name="Amount">3000</column>
+            <column name="BillingAddress">89A, george E. Silva RD, Colombo, Sri lanka</column>
+            <column name="Quantity">2</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-10 09:47:13</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">1</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">2</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">23</column>
+            <column name="Amount">1290</column>
+            <column name="BillingAddress">89A, george E. Silva RD, Colombo, Sri lanka</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-11 11:48:59</column>
+            <column name="OrderStatus">Confirmed</column>
+            <column name="UserID">1</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">25</column>
+            <column name="Amount">1290</column>
+            <column name="BillingAddress">89A, george E. Silva RD, Colombo, Sri lanka</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-12 02:00:11</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">1</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">5</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">26</column>
+            <column name="Amount">2490</column>
+            <column name="BillingAddress">kafjkajkfj,
+gjshg
+ifsingdfg</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-12 05:46:05</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">7</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">22</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">27</column>
+            <column name="Amount">2490</column>
+            <column name="BillingAddress">kafjkajkfj,
+gjshg
+ifsingdfg</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CashOnDelivery</column>
+            <column name="OrderDate">2023-06-12 05:50:54</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">7</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">22</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">28</column>
+            <column name="Amount">3450</column>
+            <column name="BillingAddress">arisona</column>
+            <column name="Quantity">5</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-12 05:51:31</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">7</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">7</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">29</column>
+            <column name="Amount">1890</column>
+            <column name="BillingAddress">arisona</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">Paypal</column>
+            <column name="OrderDate">2023-06-12 05:53:51</column>
+            <column name="OrderStatus">Pending</column>
+            <column name="UserID">7</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">10</column>
+        </table>
+        <table name="orders">
+            <column name="OrderID">30</column>
+            <column name="Amount">1250</column>
+            <column name="BillingAddress">arisona</column>
+            <column name="Quantity">1</column>
+            <column name="PaymentMethod">CreditDebitCard</column>
+            <column name="OrderDate">2023-06-12 05:54:48</column>
+            <column name="OrderStatus">Confirmed</column>
+            <column name="UserID">7</column>
+            <column name="AdminUN">admin</column>
+            <column name="ProductID">25</column>
+        </table>
+        <!-- Table product -->
+        <table name="product">
+            <column name="ProductID">1</column>
+            <column name="ProductName">High Neck Rib Maroon Crop Tee</column>
+            <column name="ProductDesc">Material:Knit,Color: Maroon Rib,Style</column>
+            <column name="filename">MaroonCropTee.jpg</column>
+            <column name="filepath">uploads/MaroonCropTee.jpg</column>
+            <column name="Price">2290</column>
+            <column name="Brand">Moose</column>
+            <column name="Size">L</column>
+            <column name="Category">women</column>
+            <column name="SubCategory">tshirt</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">2</column>
+            <column name="ProductName">Junior George’s casual shirt</column>
+            <column name="ProductDesc">Casual shirt Material: Cotton</column>
+            <column name="filename">casualShirt.jpg</column>
+            <column name="filepath">uploads/casualShirt.jpg</column>
+            <column name="Price">1500</column>
+            <column name="Brand">Junior George’s</column>
+            <column name="Size">M</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">boys</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">3</column>
+            <column name="ProductName">Mid Waist Blue Jean</column>
+            <column name="ProductDesc">Material: Denim,Color: Blue,Style Jean</column>
+            <column name="filename">bluejean.jpg</column>
+            <column name="filepath">uploads/bluejean.jpg</column>
+            <column name="Price">6990</column>
+            <column name="Brand">TiTo</column>
+            <column name="Size">L</column>
+            <column name="Category">women</column>
+            <column name="SubCategory">trousers</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">4</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="ProductDesc">Girls Printed T-Shirt,Material:Cotton</column>
+            <column name="filename">girlsPrintedTop.jpg</column>
+            <column name="filepath">uploads/girlsPrintedTop.jpg</column>
+            <column name="Price">3000</column>
+            <column name="Brand">Gini &amp; Jony</column>
+            <column name="Size">M</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">girls</column>
+            <column name="Availability">OutOfStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">5</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="ProductDesc">Crew Neck T-shirtShort Sleeve Slim Fit Casual Wear</column>
+            <column name="filename">Polocrewprint.jpg</column>
+            <column name="filepath">uploads/Polocrewprint.jpg</column>
+            <column name="Price">1290</column>
+            <column name="Brand">Polo</column>
+            <column name="Size">L</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">tshirt</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">6</column>
+            <column name="ProductName">Nike Airforce 2</column>
+            <column name="ProductDesc">The Nike Air Force 1 Low White</column>
+            <column name="filename">nikeairforce1.jpg</column>
+            <column name="filepath">uploads/nikeairforce1.jpg</column>
+            <column name="Price">16999</column>
+            <column name="Brand">Nike</column>
+            <column name="Size">NA</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">footwear</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">7</column>
+            <column name="ProductName">Poster Logo Cap</column>
+            <column name="ProductDesc">Poster Logo Cap</column>
+            <column name="filename">Levicap.jpg</column>
+            <column name="filepath">uploads/Levicap.jpg</column>
+            <column name="Price">690</column>
+            <column name="Brand">Levi’s</column>
+            <column name="Size">S</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">accessories</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">8</column>
+            <column name="ProductName">Vneck Twisted Waist Yellow Printed Dress</column>
+            <column name="ProductDesc">Vneck Twisted Waist Yellow Printed Dress</column>
+            <column name="filename">YellowPrintedDress.jpg</column>
+            <column name="filepath">uploads/YellowPrintedDress.jpg</column>
+            <column name="Price">5990</column>
+            <column name="Brand">ZigZag</column>
+            <column name="Size">L</column>
+            <column name="Category">women</column>
+            <column name="SubCategory">frock</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">9</column>
+            <column name="ProductName">Tommy tapered fit indigo wash jean </column>
+            <column name="ProductDesc">Tommy tapered fit indigo wash jean </column>
+            <column name="filename">taperedfitdenim.jpg</column>
+            <column name="filepath">uploads/taperedfitdenim.jpg</column>
+            <column name="Price">5400</column>
+            <column name="Brand">Tommy Hilfiger</column>
+            <column name="Size">S</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">trousers</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">10</column>
+            <column name="ProductName">Women’s Chino Short Camel</column>
+            <column name="ProductDesc">Women’s Chino Short Camel</column>
+            <column name="filename">ChinoShortCamel.jpg</column>
+            <column name="filepath">uploads/ChinoShortCamel.jpg</column>
+            <column name="Price">1890</column>
+            <column name="Brand">Moose</column>
+            <column name="Size">M</column>
+            <column name="Category">women</column>
+            <column name="SubCategory">short</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">14</column>
+            <column name="ProductName">Formal Black Blazer Dress</column>
+            <column name="ProductDesc">Material: Cotton/Polyester
+Color: Black
+
+Fit Type: Regular Fit
+
+Stretch: Slight Stretch
+Style: Short sleeves, Overlapped front, Skater dress</column>
+            <column name="filename">Black Blazer Dress.jpg</column>
+            <column name="filepath">uploads/Black Blazer Dress.jpg</column>
+            <column name="Price">5490</column>
+            <column name="Brand">zigzag</column>
+            <column name="Size">M</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">frock</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">15</column>
+            <column name="ProductName">Sleeveless Mini Floral Dress</column>
+            <column name="ProductDesc">Material: Polyester/Elastane
+Color: Navy Blue
+
+Fit Type: Regular
+
+Stretch: Non Stretch
+Style: Sleeveless, Mini dress, Round neck</column>
+            <column name="filename">Mini Floral Dress.jpg</column>
+            <column name="filepath">uploads/Mini Floral Dress.jpg</column>
+            <column name="Price">4190</column>
+            <column name="Brand">zigzag</column>
+            <column name="Size">M</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">frock</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">16</column>
+            <column name="ProductName">Moose crew neck slim fit</column>
+            <column name="ProductDesc">Crew Neck T-shirt
+Short Sleeve,Slim FitCasual Wear
+Material Composition:100% Cotton
+</column>
+            <column name="filename">Moosecrewneck.jpg</column>
+            <column name="filepath">uploads/Moosecrewneck.jpg</column>
+            <column name="Price">990</column>
+            <column name="Brand">moose</column>
+            <column name="Size">L</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">tshirt</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">17</column>
+            <column name="ProductName">Moose men’s chino pants</column>
+            <column name="ProductDesc">Trouser
+Waist: Mid-Rise
+Slim Fit
+•	Type of pleat: Flat front
+Material Composition:98% Cotton &amp; 5% Spandex
+</column>
+            <column name="filename">moosechinopant.jpg</column>
+            <column name="filepath">uploads/moosechinopant.jpg</column>
+            <column name="Price">3290</column>
+            <column name="Brand">moose</column>
+            <column name="Size">M</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">trouser</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">18</column>
+            <column name="ProductName">Junior George’s Long sleeve crewneck </column>
+            <column name="ProductDesc">1.	Casual   T-shirt
+•	Material :100% Cotton
+•	Color: green/Orange/Gray
+•	Size: 1yr,2yrs,3yrs,4yrs and above
+</column>
+            <column name="filename">crewNeck.webp</column>
+            <column name="filepath">uploads/crewNeck.webp</column>
+            <column name="Price">1000</column>
+            <column name="Brand">Junior George’s</column>
+            <column name="Size">S</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">boys</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">19</column>
+            <column name="ProductName">MotherCare Shorts</column>
+            <column name="ProductDesc">Shorts
+	1.	Shorts 
+•	Material:100% Cotton
+•	Color: Purple/White/light blue
+•	Size: 1yr,2yrs,3yrs,4yrs and above
+	motherCareShort.jpeg	Rs.5500.00	Mother care
+	Kids	Boys	InStock
+</column>
+            <column name="filename">motherCareShort.jpeg</column>
+            <column name="filepath">uploads/motherCareShort.jpeg</column>
+            <column name="Price">5490</column>
+            <column name="Brand">Mother Care</column>
+            <column name="Size">XS</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">girls</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">20</column>
+            <column name="ProductName">Basic Crew Neck Long Sleeve Gray Tshirt</column>
+            <column name="ProductDesc">Material: Knit
+Color: Gray Marl
+Style: Long sleeve, crew neck</column>
+            <column name="filename">Sleeve Gray Tshirt.jpg</column>
+            <column name="filepath">uploads/Sleeve Gray Tshirt.jpg</column>
+            <column name="Price">2990</column>
+            <column name="Brand">moose</column>
+            <column name="Size">M</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">tshirt</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">21</column>
+            <column name="ProductName">Vneck Strappy Holiday Dress</column>
+            <column name="ProductDesc">Material: Polyester
+Color: Beige
+Style: Vneck, Shoulder straps, Skater dress</column>
+            <column name="filename">Holiday Dress.jpg</column>
+            <column name="filepath">uploads/Holiday Dress.jpg</column>
+            <column name="Price">4990</column>
+            <column name="Brand">zigzag</column>
+            <column name="Size">S</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">frock</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">22</column>
+            <column name="ProductName">Men’s Sports Watch</column>
+            <column name="ProductDesc">•	Digital Time
+•	100% High Quality
+•	Movement: Digital
+•	EL Backlight
+•	1/100sec Hour Format
+•	30m-50m water resistance
+</column>
+            <column name="filename">Gshock.jpg</column>
+            <column name="filepath">uploads/Gshock.jpg</column>
+            <column name="Price">2490</column>
+            <column name="Brand">Casio</column>
+            <column name="Size">NA</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">watches</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">23</column>
+            <column name="ProductName">High Waist Light Whiskers Black Jean</column>
+            <column name="ProductDesc">Material: Denim
+Color: Black
+Style: High Waist, Light Whiskers, 3 buttons, jean </column>
+            <column name="filename">Whiskers Black Jean.jpg</column>
+            <column name="filepath">uploads/Whiskers Black Jean.jpg</column>
+            <column name="Price">6990</column>
+            <column name="Brand">tito</column>
+            <column name="Size">M</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">trouser</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">24</column>
+            <column name="ProductName">Adidas X_PLR</column>
+            <column name="ProductDesc">Adidas X_PLR Shoes. A minimalist style brings modern looks to </column>
+            <column name="filename">adidassport.jpg</column>
+            <column name="filepath">uploads/adidassport.jpg</column>
+            <column name="Price">19000</column>
+            <column name="Brand">adidas</column>
+            <column name="Size">NA</column>
+            <column name="Category">men</column>
+            <column name="SubCategory">footwear</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">25</column>
+            <column name="ProductName">H &amp; M Boys Sunglass</column>
+            <column name="ProductDesc">1.	Sunglasses with frames
+2.	Sidepieces in plastic
+3.	Tinted &amp; UV-protective plastic lenses.
+4.	Color: Black, Solid Color
+</column>
+            <column name="filename">hmSunglass.jpeg</column>
+            <column name="filepath">uploads/hmSunglass.jpeg</column>
+            <column name="Price">1250</column>
+            <column name="Brand">h &amp; m</column>
+            <column name="Size">NA</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">boys</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">26</column>
+            <column name="ProductName">H &amp; M Cotton Bucket Hat</column>
+            <column name="ProductDesc">1.	Bucket hat in cotton twill with embroidered eyelets and a sloping brim
+2.	Color: Light Pink, Solid color
+3.	Material: 100% Cotton &amp; Twill
+</column>
+            <column name="filename">hmBucketHat.jpeg</column>
+            <column name="filepath">uploads/hmBucketHat.jpeg</column>
+            <column name="Price">1590</column>
+            <column name="Brand">h &amp; m</column>
+            <column name="Size">NA</column>
+            <column name="Category">kids</column>
+            <column name="SubCategory">girls</column>
+            <column name="Availability">InStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <table name="product">
+            <column name="ProductID">27</column>
+            <column name="ProductName">Scoop Neck Rib Red Tee</column>
+            <column name="ProductDesc">Material: Knit
+Color: Red
+Style: Sleeveless, Scoop neck</column>
+            <column name="filename">Rib Red Tee.jpg</column>
+            <column name="filepath">uploads/Rib Red Tee.jpg</column>
+            <column name="Price">2190</column>
+            <column name="Brand">moose</column>
+            <column name="Size">L</column>
+            <column name="Category">female</column>
+            <column name="SubCategory">tshirt</column>
+            <column name="Availability">OutOfStock</column>
+            <column name="AdminUN">admin</column>
+        </table>
+        <!-- Table purchasedproducts -->
+        <!-- Table users -->
+        <table name="users">
+            <column name="UserID">1</column>
+            <column name="FirstName">Aroshana</column>
+            <column name="LastName">Dissanayke</column>
+            <column name="DOB">2001-04-16</column>
+            <column name="Gender">Male</column>
+            <column name="Email">aroshana@gmail.com</column>
+            <column name="Phone">60888</column>
+            <column name="Password">$2a$04$9yoZQ9NwRanovP5OeXR44OSv8Aaarp4EPEz1HutAVJgXAj.62Z1Ka</column>
+            <column name="Address">89A, george E. Silva RD, Colombo, Sri lanka</column>
+            <column name="City">Colombo</column>
+            <column name="PostalCode">7006</column>
+        </table>
+        <table name="users">
+            <column name="UserID">2</column>
+            <column name="FirstName">Hansamalee</column>
+            <column name="LastName">Ekanayake</column>
+            <column name="DOB">2000-06-30</column>
+            <column name="Gender">Female</column>
+            <column name="Email">hansalee@gmail.com</column>
+            <column name="Phone">990888</column>
+            <column name="Password">$2a$04$9rBs/oJJd2l9joCiQiLFUe0LNDhpFEQDFTXSVcCPhSeICETdjSNMu</column>
+            <column name="Address">21/56, valinton, New Zealand</column>
+            <column name="City">Valinton</column>
+            <column name="PostalCode">7788</column>
+        </table>
+        <table name="users">
+            <column name="UserID">3</column>
+            <column name="FirstName">Akila</column>
+            <column name="LastName">Pathum</column>
+            <column name="DOB">2001-11-02</column>
+            <column name="Gender">Male</column>
+            <column name="Email">akila@gmail.com</column>
+            <column name="Phone">9088887</column>
+            <column name="Password">$2a$04$X618QedSKSQv9Yi9FzcTweeARdiGqydVJvUbGKGzltZ/GzfZ.x/K2</column>
+            <column name="Address">67/453D, Youngland, Westly, U.S</column>
+            <column name="City">Westly</column>
+            <column name="PostalCode">9988</column>
+        </table>
+        <table name="users">
+            <column name="UserID">4</column>
+            <column name="FirstName">Anura</column>
+            <column name="LastName">Bandara</column>
+            <column name="DOB">2001-08-09</column>
+            <column name="Gender">Male</column>
+            <column name="Email">anuradha@gmail.com</column>
+            <column name="Phone">80888</column>
+            <column name="Password">$2a$04$t04avF3WF1kseGxzfGvNDe2eB5nW4iZGsQkt2xAjcXqXPs.nUpk1e</column>
+            <column name="Address">12/12, mildstone, Hawaii</column>
+            <column name="City">Mildstone</column>
+            <column name="PostalCode">7676</column>
+        </table>
+        <table name="users">
+            <column name="UserID">5</column>
+            <column name="FirstName">Achira</column>
+            <column name="LastName">Rathnayake</column>
+            <column name="DOB">2000-04-16</column>
+            <column name="Gender">Male</column>
+            <column name="Email">achira@gmail.com</column>
+            <column name="Phone">7888</column>
+            <column name="Password">$2a$04$qo7DJol8A3w16Vh2fIqBUexeSETMBHFb7T1eGLnp8Xzo./iNO0fCS</column>
+            <column name="Address">7/90/B, hamiltonvaley, Germany</column>
+            <column name="City">Hamiltonvaley</column>
+            <column name="PostalCode">7006</column>
+        </table>
+        <table name="users">
+            <column name="UserID">6</column>
+            <column name="FirstName">Reshmi</column>
+            <column name="LastName">Gamage</column>
+            <column name="DOB">2004-01-15</column>
+            <column name="Gender">Female</column>
+            <column name="Email">testing@gmail.com</column>
+            <column name="Phone">5677</column>
+            <column name="Password">$2y$10$WEZnsyjWAxab3tA.Cv0LOOi00bJ64OtqaDIws8QfoxqufNPVvgXwq</column>
+            <column name="Address">67j test riad test</column>
+            <column name="City">Soul</column>
+            <column name="PostalCode">678</column>
+        </table>
+        <table name="users">
+            <column name="UserID">7</column>
+            <column name="FirstName">Hrithik</column>
+            <column name="LastName">Roshan</column>
+            <column name="DOB">1995-06-21</column>
+            <column name="Gender">Male</column>
+            <column name="Email">hr@in.com</column>
+            <column name="Phone">89007</column>
+            <column name="Password">$2y$10$ioY9OqXNKaS4owLJnVcAOexgNsx1zlz6JSkMykp97Qaeeufjr99a2</column>
+            <column name="Address">arisona</column>
+            <column name="City">mumbai</column>
+            <column name="PostalCode">6969</column>
+        </table>
+        <!-- Table wishlist -->
+        <table name="wishlist">
+            <column name="WishlistID">1</column>
+            <column name="UserID">4</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Price">3000</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">2</column>
+            <column name="UserID">4</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="Image">uploads/Polocrewprint.jpg</column>
+            <column name="Price">1290</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">3</column>
+            <column name="UserID">3</column>
+            <column name="ProductName">Mid Waist Blue Jean</column>
+            <column name="Image">uploads/bluejean.jpg</column>
+            <column name="Price">6990</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">4</column>
+            <column name="UserID">1</column>
+            <column name="ProductName">Junior George’s casual shirt</column>
+            <column name="Image">uploads/casualShirt.jpg</column>
+            <column name="Price">1500</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">5</column>
+            <column name="UserID">5</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Price">3000</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">14</column>
+            <column name="UserID">4</column>
+            <column name="ProductName">Gini &amp; jony Gils Printed tops</column>
+            <column name="Image">uploads/girlsPrintedTop.jpg</column>
+            <column name="Price">3000</column>
+            <column name="Availability">OutOfStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">15</column>
+            <column name="UserID">4</column>
+            <column name="ProductName">Polo Crew Neck Printed</column>
+            <column name="Image">uploads/Polocrewprint.jpg</column>
+            <column name="Price">1290</column>
+            <column name="Availability">InStock</column>
+        </table>
+        <table name="wishlist">
+            <column name="WishlistID">17</column>
+            <column name="UserID">7</column>
+            <column name="ProductName">Scoop Neck Rib Red Tee</column>
+            <column name="Image">uploads/Rib Red Tee.jpg</column>
+            <column name="Price">2190</column>
+            <column name="Availability">InStock</column>
+        </table>
+    </database>
+</pma_xml_export>

@@ -1,0 +1,45 @@
+/* Slide show In AboutUs */ /*Hansa*/
+.slideshowInAboutUs {
+    max-width: 1500px;
+    max-height: 700px;
+    position: relative;
+    margin: auto;
+}
+
+/* Hide the images by default */ /*Hansa*/
+.slideshowInAboutUs img {
+    display: none;
+}
+
+/* Style the navigation dots/bullets */ /*Hansa*/
+.dot {
+    height: 15px;
+    width: 15px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+}
+
+.dot.active /*Hansa*/
+{
+    background-color: #717171;
+}
+
+.square-background /*Hansa*/
+{
+    display: inline-block;
+    background-color: rgba(21,76,121, 0.25);  /* Background color of the square */
+    padding: 20px;  /* Adjust the padding as desired */
+    border-radius: 3px;  /* Adjust the border radius to make it more or less rounded */
+    
+}
+
+.Paragraph-style /*Hansa*/
+{
+    background-color:rgba(21,76,121, 0.25); 
+    padding:5px;
+    font-family:arial; 
+    border-radius: 3px;  /* Adjust the border radius to make it more or less rounded */
+    
+}
